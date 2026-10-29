@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Revisión de videos de inversión</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Source+Sans+3:wght@400;600&display=swap">
+<style>
+/* Layout: hoja de verificación en una columna; franja de cifras del día, veredictos por video, tabla de rangos de 52 semanas */
+:root {
+  --bg: #f2f4f7;
+  --surface: #ffffff;
+  --ink: #152033;
+  --muted: #586579;
+  --line: #d8dee8;
+  --accent: #0c6b70;
+  --ok: #1d7448;
+  --ok-bg: #e3f2ea;
+  --mid: #8f5b00;
+  --mid-bg: #fbf0d9;
+  --bad: #a8261d;
+  --bad-bg: #fbe5e2;
+  --na: #4f5b6e;
+  --na-bg: #e7eaf0;
+  --track: #dfe4ec;
+  --font-display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Source Sans 3", "Segoe UI", Roboto, Arial, sans-serif;
+  --font-data: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f141b; --surface: #161d27; --ink: #e5ebf3; --muted: #9aa6b7; --line: #283345;
+    --accent: #52c3c4; --ok: #58c891; --ok-bg: #173327; --mid: #e6ac45; --mid-bg: #36290f;
+    --bad: #f07a70; --bad-bg: #3a1c1a; --na: #a9b3c2; --na-bg: #232b38; --track: #2a3444;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f141b; --surface: #161d27; --ink: #e5ebf3; --muted: #9aa6b7; --line: #283345;
+  --accent: #52c3c4; --ok: #58c891; --ok-bg: #173327; --mid: #e6ac45; --mid-bg: #36290f;
+  --bad: #f07a70; --bad-bg: #3a1c1a; --na: #a9b3c2; --na-bg: #232b38; --track: #2a3444;
+  color-scheme: dark;
+}
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+}
+.page {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding-block: 32px 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid;
+  gap: 40px;
+}
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(1.75rem, 4vw, 2.5rem); font-weight: 700; letter-spacing: -0.01em; }
+h2 { font-size: 1.35rem; font-weight: 600; }
+p { margin: 0; }
+.eyebrow {
+  font-family: var(--font-data);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.lead { color: var(--muted); max-width: 65ch; }
+header { display: grid; gap: 12px; }
+.strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+.strip div { background: var(--surface); padding: 12px 16px; display: grid; gap: 2px; }
+.strip .k { font-size: 0.85rem; color: var(--muted); }
+.strip .v { font-family: var(--font-data); font-size: 1.15rem; font-weight: 500; font-variant-numeric: tabular-nums; }
+.strip .n { font-size: 0.82rem; color: var(--muted); }
+section { display: grid; gap: 16px; }
+.sec-head { display: grid; gap: 6px; }
+
+/* Veredictos */
+.claims { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+.claims li {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr);
+  gap: 8px 20px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+}
+.claims h3 { font-size: 1.02rem; font-weight: 600; }
+.claims .body { display: grid; gap: 4px; min-width: 0; }
+.claims .body p { color: var(--muted); }
+.chip {
+  justify-self: start;
+  align-self: start;
+  font-family: var(--font-data);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+.v-ok { color: var(--ok); background: var(--ok-bg); }
+.v-mid { color: var(--mid); background: var(--mid-bg); }
+.v-bad { color: var(--bad); background: var(--bad-bg); }
+.v-na { color: var(--na); background: var(--na-bg); }
+
+/* Noticias */
+.news { list-style: none; margin: 0; padding: 0; display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.news li { background: var(--surface); padding: 14px 16px; display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 4px 16px; }
+.news .when { font-family: var(--font-data); font-size: 0.82rem; color: var(--accent); padding-top: 2px; }
+.news p { color: var(--muted); }
+.news strong { color: var(--ink); }
+
+/* Tabla de rangos */
+.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; min-width: 900px; font-size: 0.92rem; }
+th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-weight: 600; font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; background: var(--bg); }
+tbody tr:last-child td { border-bottom: none; }
+.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+th.num { text-align: right; }
+.tick { font-family: var(--font-data); font-weight: 500; }
+.name { display: block; font-size: 0.82rem; color: var(--muted); }
+.down { color: var(--bad); }
+.up { color: var(--ok); }
+.range { width: 190px; }
+.bar { position: relative; height: 8px; background: var(--track); border-radius: 4px; margin: 6px 0 4px; }
+.bar i { position: absolute; top: 50%; width: 12px; height: 12px; border-radius: 50%; background: var(--accent); border: 2px solid var(--surface); transform: translate(-50%, -50%); }
+.ends { display: flex; justify-content: space-between; font-family: var(--font-data); font-size: 0.72rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.tag { font-size: 0.82rem; }
+.compare-title { font-size: 1rem; font-weight: 600; margin-top: 8px; }
+
+/* Fuerzas */
+.forces { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+.forces div { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 16px; display: grid; gap: 8px; align-content: start; }
+.forces h3 { font-size: 1.02rem; font-weight: 600; }
+.forces p { color: var(--muted); }
+td.plus { color: var(--ink); }
+td.minus { color: var(--muted); }
+
+/* Cómo leer */
+.checks { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+.checks div { border-top: 3px solid var(--accent); padding-top: 12px; display: grid; gap: 6px; }
+.checks h3 { font-size: 1rem; font-weight: 600; }
+.checks p { color: var(--muted); }
+
+footer { display: grid; gap: 14px; font-size: 0.9rem; color: var(--muted); border-top: 1px solid var(--line); padding-top: 20px; }
+.notice { color: var(--ink); background: var(--mid-bg); border-radius: 8px; padding: 12px 16px; }
+.sources { columns: 2 280px; column-gap: 24px; margin: 0; padding-left: 18px; }
+.sources li { break-inside: avoid; margin-bottom: 4px; }
+a { color: var(--accent); }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+@media (max-width: 640px) {
+  .claims li { grid-template-columns: minmax(0, 1fr); }
+  .news li { grid-template-columns: minmax(0, 1fr); }
+  .page { gap: 32px; padding-block: 24px 40px; }
+}
+</style>
+</head>
+<body>
+
+<div class="page">
+  <header>
+    <p class="eyebrow">Jueves 29/10/2026 · datos durante la sesión</p>
+    <h1>Revisión de videos de inversión</h1>
+    <p class="lead">Lo que dicen los videos revisados hoy frente a los precios reales, las noticias del mundo y las acciones y fondos que están cerca de su mínimo de las últimas 52 semanas. Incluye todo lo que Granola transcribió hasta el minuto 29:49 de la grabación.</p>
+    <div class="strip">
+      <div><span class="k">Dólar hoy (USD/COP)</span><span class="v">$3.170,73</span><span class="n">Rango del año: $3.028,48 a $3.912,00</span></div>
+      <div><span class="k">Banco de la República</span><span class="v">12,25 %</span><span class="n">Se espera 12,50 % el 30/10/2026</span></div>
+      <div><span class="k">Reserva Federal (EE. UU.)</span><span class="v">3,75 % a 4 %</span><span class="n">Sin cambio el 28/10/2026</span></div>
+      <div><span class="k">Alphabet (Google) hoy</span><span class="v down">−12,31 %</span><span class="n">Peor día desde marzo de 2020</span></div>
+      <div><span class="k">Oro (onza)</span><span class="v">US$4.023,43</span><span class="n">A 2,77 % de su mínimo del año</span></div>
+      <div><span class="k">Euro (EUR/USD)</span><span class="v">1,1151</span><span class="n">A 0,39 % de su mínimo del año</span></div>
+    </div>
+  </header>
+
+  <section>
+    <div class="sec-head">
+      <h2>Comparación por nivel de riesgo</h2>
+      <p class="lead">Todo lo revisado hoy, ordenado de menor a mayor riesgo con datos del 29/10/2026. No es una recomendación de compra: cuál conviene depende del plazo, de cuánto se puede perder y de que ya exista un colchón de emergencia.</p>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Riesgo</th><th>Qué es</th><th>Ejemplos de hoy</th><th>A favor</th><th>En contra</th><th>Cómo están hoy</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="chip v-ok">Muy bajo</span></td><td>Plata en pesos con interés fijo</td><td>CDT a 360 días y cuentas de ahorro</td><td class="plus">CDT entre 12,8 % y 13,5 % anual; cuentas entre 9,35 % y 11 %. Fogafín respalda hasta $50.000.000 por persona en cada banco.</td><td class="minus">Se descuenta retención en la fuente y la inflación se come una parte.</td><td>Se espera que el Banco de la República suba su tasa a 12,50 % el 30/10/2026.</td></tr>
+          <tr><td><span class="chip v-mid">Medio</span></td><td>Fondos de todo el mercado: cientos o miles de empresas a la vez</td><td>VT, VTI, VOO, VXUS</td><td class="plus">Muy diversificados, de costo bajo y con décadas de historia: VTI 7,79 % al año desde 2001 y VOO 12,9 % al año en 15 años, solo por precio. El VOO se puede comprar en pesos desde Colombia.</td><td class="minus">Caen junto con todo el mercado en las crisis y no dan saltos rápidos.</td><td>Cerca de su máximo, no en un piso: VOO a 1,63 %, VTI a 1,85 %, VT a 2,93 % y VXUS a 5,79 % de su máximo.</td></tr>
+          <tr><td><span class="chip v-mid">Medio alto</span></td><td>Fondos de un solo sector</td><td>QQQ, SMH, BOTZ, HUMN, KOID, DRAM, EUV</td><td class="plus">Más crecimiento en los años buenos: QQQ 19,86 % y SMH 32,3 % al año en 10 años.</td><td class="minus">Caídas fuertes: SMH perdió 47,63 % entre 2021 y 2022. Los de robots cobran mucho más. DRAM y EUV salieron en 2026 y no tienen historia.</td><td>Entre −6,23 % (QQQ) y −36,11 % (DRAM) desde su máximo.</td></tr>
+          <tr><td><span class="chip v-bad">Alto</span></td><td>Una sola empresa grande que genera utilidades</td><td>Google, Nubank, MercadoLibre, Vistra</td><td class="plus">Negocios que ya ganan plata y que cayeron por una noticia concreta.</td><td class="minus">Todo depende de una empresa y de que esa noticia pase: el gasto en IA de Google, la situación de Brasil.</td><td>Cerca de su mínimo: entre 6,44 % y 10,47 % por encima.</td></tr>
+          <tr><td><span class="chip v-bad">Alto</span></td><td>La bolsa de un país o una materia prima</td><td>EWZ (Brasil), KSTR (China), oro</td><td class="plus">Pueden rebotar si cambian la política o la economía.</td><td class="minus">Dependen de elecciones, gobiernos y tasas de interés.</td><td>Muy cerca de su mínimo: oro 2,77 %, KSTR 2,90 % y EWZ 8,56 % por encima.</td></tr>
+          <tr><td><span class="chip v-bad">Muy alto</span></td><td>Empresas sin utilidades y criptomonedas</td><td>Oklo, NuScale, Centrus, Symbotic, MP Materials, SpaceX, bitcoin, UNI, LINK, AAVE</td><td class="plus">Pueden multiplicarse si su apuesta sale bien.</td><td class="minus">Varias todavía no ganan plata y se financian emitiendo acciones nuevas.</td><td>Entre −29,31 % (bitcoin) y −87,48 % (NuScale) desde su máximo.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="checks">
+      <div><h3>Lo que está en un piso es lo más riesgoso</h3><p>Lo más diversificado (VT, VOO) está cerca de su máximo. Lo que está cerca de su mínimo son empresas sueltas, países, materias primas y especulativas.</p></div>
+      <div><h3>La vara para medir es el CDT</h3><p>Un CDT paga entre 12,8 % y 13,5 % en pesos con muy poco riesgo. El VOO dio 12,9 % al año en dólares en los últimos 15 años, solo por precio. Cualquier opción con más riesgo tiene que justificarse frente a esa cifra.</p></div>
+      <div><h3>Mientras más prometen, menos se sostienen</h3><p>Los videos con «oportunidad histórica» o «millonarios», los patrocinados por NAGA y los que venden suscripciones fueron los que menos datos sostuvieron. Los de fondos indexados fueron los más cercanos a la realidad.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2>Los videos frente a los datos</h2>
+      <p class="lead">Diecisiete videos revisados. Las rentabilidades son por precio, sin dividendos.</p>
+    </div>
+    <ul class="claims">
+      <li><span class="chip v-mid">A medias</span><div class="body"><h3>Dólar barato para invertir afuera</h3><p>El dólar está en $3.170,73: más barato que el máximo del año ($3.912), pero no en el piso ($3.028,48). Comprar dólares también es apostar a que el peso no siga ganando valor. El video era un anuncio de una plataforma de giros.</p></div></li>
+      <li><span class="chip v-ok">Cierto</span><div class="body"><h3>Se pinchó la burbuja de IA en China</h3><p>El fondo del índice STAR 50 (KSTR) pasó de US$32,54 a US$17,73: −45,51 % desde su máximo de finales de junio de 2026.</p></div></li>
+      <li><span class="chip v-ok">Cierto</span><div class="body"><h3>El Nasdaq tiene un PER cercano a 30</h3><p>El de QQQ, el fondo del Nasdaq 100, es 27,65.</p></div></li>
+      <li><span class="chip v-mid">Depende</span><div class="body"><h3>Los mercados siempre se recuperan</h3><p>Se cumple para índices amplios de EE. UU. con tiempo. No para cualquier acción ni cualquier país: el Nikkei de Japón tardó 34 años en volver a su máximo de 1989.</p></div></li>
+      <li><span class="chip v-bad">Falso</span><div class="body"><h3>Brasil tuvo el mayor desplome de su historia</h3><p>El Ibovespa cayó 13,88 % el 26/10/2026, su peor día desde 2020. En 1990 cayó 22,27 % y en 1998, 15,83 %. Lo del «fraude» es una acusación de Flávio Bolsonaro, que perdió la elección; no está comprobado.</p></div></li>
+      <li><span class="chip v-mid">Exagerado</span><div class="body"><h3>Nubank, una oportunidad histórica</h3><p>NU pasó de US$15,16 (23/10/2026) a 12,59 (26/10/2026) y hoy está en 12,09. El rebote duró un día: quien compró a 12,80 va perdiendo 5,55 %. El fondo de Brasil (EWZ) va −21,70 % y no ha rebotado.</p></div></li>
+      <li><span class="chip v-ok">Cierto</span><div class="body"><h3>Los 4 fondos indexados que se necesitan</h3><p>VTI 7,79 % al año desde 2001 (con dividendos se acerca al 9,41 % del video); VOO 12,9 % al año en 15 años; QQQ 19,86 % y VXUS 6,07 % al año en 10 años. VTI y VOO se repiten en cerca del 85 %. QQQ es el que más cae en las crisis.</p></div></li>
+      <li><span class="chip v-ok">Cierto</span><div class="body"><h3>SpaceX salió a bolsa</h3><p>Salió en junio de 2026 a US$135, en la salida a bolsa más grande de la historia (unos US$75.000 millones, no 86.000). En el trimestre facturó US$7.810 millones y gastó US$18.370 millones en equipos. Hoy está en US$143,92, un 36,22 % por debajo de su máximo.</p></div></li>
+      <li><span class="chip v-bad">Inflado</span><div class="body"><h3>Las acciones nucleares de Peter Thiel</h3><p>El fondo de Thiel tiene US$418,7 millones, sobre todo en Amazon, Vista Energy y Vistra. No tiene Oklo ni NuScale. Desde su máximo: Oklo −82,43 %, NuScale −87,48 %, Centrus −72,27 %. Termina vendiendo el acceso a una aplicación.</p></div></li>
+      <li><span class="chip v-bad">Interés propio</span><div class="body"><h3>Tres fondos de memorias y procesadores</h3><p>Lo patrocina NAGA, un broker de Chipre que opera sobre todo con CFD y que su regulador multó con €150.000. DRAM salió en abril de 2026 y va −36,11 % desde su máximo; EUV salió en mayo de 2026 y va −30,22 %. SMH sí tiene historia: 32,3 % al año en 10 años, pero cayó 47,63 % entre noviembre de 2021 y octubre de 2022.</p></div></li>
+      <li><span class="chip v-mid">A medias</span><div class="body"><h3>Robots humanoides: Moog, MP Materials y Symbotic</h3><p>Tesla empezó una producción inicial del robot Optimus en Fremont; la venta a otras empresas se espera hacia finales de 2027, no este año. Los precios del video están desactualizados: Moog está en US$361,66 (no 384), MP Materials en US$41,92 (no 48, −45,42 % desde su máximo) y Symbotic en US$39,21 (no 43, −55,38 %). Los US$22.000 millones en pedidos de Symbotic no se verificaron. Termina pidiendo comentar para mandar un enlace.</p></div></li>
+      <li><span class="chip v-ok">Cierto</span><div class="body"><h3>Tres fondos de robots</h3><p>Las proyecciones son reales: Goldman Sachs calcula US$38.000 millones en robots humanoides para 2035 y Morgan Stanley US$5 billones para 2050. El primer fondo coincide con BOTZ (10 años en bolsa), el segundo es HUMN (UBTech y Tesla) y el tercero KOID; el «60.000 empresas» del audio seguramente son unas 60. Desde su máximo: BOTZ −19,90 %, HUMN −28,07 %, KOID −19,71 %. El mismo video aconseja no pasar del 5 % del portafolio.</p></div></li>
+      <li><span class="chip v-mid">A medias</span><div class="body"><h3>Tres empresas de robots: Tesla, Nvidia y Keyence</h3><p>Tesla no fabrica robots «a escala absurda»: arrancó una producción inicial y espera vender a otras empresas hacia finales de 2027. Lo de Nvidia es cierto: sus plataformas Isaac y Omniverse se usan para entrenar robots. Lo de Keyence también: su margen operativo fue 51,0 % en el año cerrado el 20/03/2026 y 54,0 % entre abril y junio de 2026. Pero no es barata (PER de 39,4 en junio de 2026) y cotiza en Tokio: desde Colombia se llega con Interactive Brokers o, de forma indirecta, con el fondo BOTZ, que la tiene entre sus acciones.</p></div></li>
+      <li><span class="chip v-ok">Cierto</span><div class="body"><h3>Ranking de fondos: el ganador es VT</h3><p>Lo patrocina otra vez NAGA, ahora con premios de US$500 a US$2.500 por depositar. El orden es razonable: SPY cobra más que VOO por lo mismo, VTI suma miles de empresas medianas y pequeñas a las 500 del VOO, y DRAM queda de último por estar concentrado en memorias. Lo de VXUS se cumplió en 2025: subió 28,02 % contra 16,39 % del VOO, solo por precio. En 2026 ya no: va 10,66 % contra 12,70 % del VOO. El ganador, VT, compra cerca de 10.000 empresas de todo el mundo en un solo fondo: subió 20,07 % en 2025 y va 11,97 % en 2026. Lo de ganarle a la mayoría de los profesionales coincide con los informes SPIVA de S&amp;P: a 15 años, la mayoría de los fondos administrados por gestores no le gana a su índice.</p></div></li>
+      <li><span class="chip v-mid">A medias</span><div class="body"><h3>La bolsa de EE. UU. se pasa a blockchain (tokenización)</h3><p>La noticia es real: el 28/10/2026 la DTCC, que liquida casi todas las acciones de EE. UU., lanzó su servicio para llevar a blockchain acciones del Russell 1000, fondos y bonos del Tesoro, con JPMorgan, Citi y Morgan Stanley entre 20 firmas. Nasdaq tiene un piloto aprobado desde marzo de 2026 y NYSE planea una plataforma abierta todos los días a toda hora. Pero comprar Uniswap, Chainlink o Aave no es comprar ese mercado: la DTCC usa Canton Network y una red privada, y a Chainlink solo para manejar garantías. Los precios del video son de agosto; hoy UNI está en US$7,28 (−33,45 % desde su máximo), LINK en US$11,73 (−37,19 %) y AAVE en US$135,74 (−42,74 %). Standard Chartered sí le puso a LINK un objetivo de US$200 para 2030. Lo de BlackRock con Uniswap y la clasificación de la SEC no se pudo verificar. Termina vendiendo una suscripción.</p></div></li>
+      <li><span class="chip v-na">No es inversión</span><div class="body"><h3>Reventa de AliExpress por TikTok Shop</h3><p>Un joven dice ganar más de US$10.000 al mes comprando un producto en AliExpress a US$0,99 y vendiéndolo en TikTok Shop a US$24. Es un negocio de reventa, con riesgos de calidad, tiempos de envío y reglas de la plataforma.</p></div></li>
+      <li><span class="chip v-na">No es inversión</span><div class="body"><h3>US$10.000 al mes con marca personal</h3><p>Es montar un negocio de contenido: publicar un video diario y luego trabajar con marcas.</p></div></li>
+    </ul>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2>Cuentas de Instagram a seguir</h2>
+      <p class="lead">Las 13 cuentas de los reels compartidos el 29/10/2026, agrupadas por cómo ganan plata. La insignia azul de verificado se compra: no prueba que lo que dicen sea cierto.</p>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Cuenta</th><th>Seguidores (aprox.)</th><th>Quién es y cómo gana plata</th><th>Reel compartido</th><th>Revisión</th></tr>
+        </thead>
+        <tbody>
+          <tr><td colspan="5"><strong>Medios y periodistas: no venden cursos</strong></td></tr>
+          <tr><td>@portafolioco</td><td>467.000</td><td>Portafolio, periódico de economía de Colombia.</td><td>Histórico debut en la bolsa de la India</td><td><span class="chip v-ok">Cierto</span> Jio Platforms, de Mukesh Ambani, subió 21 % en su debut del 28/10/2026, tras la mayor salida a bolsa de la India (unos US$3.200 millones).</td></tr>
+          <tr><td>@mateconmote</td><td>1.700.000</td><td>Análisis económico y político en YouTube y TikTok; vive de publicidad.</td><td>Mapa del mercado en rojo, con Google −12,3 %</td><td><span class="chip v-ok">Cierto</span> Alphabet cayó 12,31 % el 29/10/2026, su peor día desde marzo de 2020.</td></tr>
+          <tr><td>@hectorchamizo</td><td>198.000</td><td>Periodista económico en España; escribe en Forbes.</td><td>«Explosión histórica» (cobre)</td><td><span class="chip v-na">Sin revisar</span> Falta ver el video.</td></tr>
+          <tr><td colspan="5"><strong>Venden cursos, asesoría o una herramienta</strong></td></tr>
+          <tr><td>@mispropiasfinanzas</td><td>1.100.000</td><td>Finanzas para colombianos; vende cursos y acompañamiento «élite».</td><td>Nubank cae cerca del 20 %</td><td><span class="chip v-ok">Cierto</span> NU pasó de US$15,16 el 23/10/2026 a US$12,09 hoy: −20,25 %.</td></tr>
+          <tr><td>@trading_sharks_</td><td>198.000</td><td>Cursos de inversión y promociones del broker NAGA, con una historia destacada llamada «NAGA promo».</td><td>Seis reels: no comprar en la cima, primeros US$1.000, US$10.000 de facturación al mes, 3 ETF «que harán millonarios», robots humanoides y un ranking de ETF</td><td><span class="chip v-mid">A medias</span> El ranking de fondos tiene un orden razonable, pero viene patrocinado por NAGA. «Millonarios en 5 años» es una promesa que ningún fondo garantiza.</td></tr>
+          <tr><td>@camilomondragonr</td><td>294.000</td><td>Acciones, cripto y finca raíz; vende su academia (Principia).</td><td>Reel sin título en la portada</td><td><span class="chip v-na">Sin revisar</span> Falta ver el video.</td></tr>
+          <tr><td>@simplemente.invertir</td><td>231.000</td><td>Juan Venuto, de Argentina; vende cursos.</td><td>3 datos importantes para comprar acciones</td><td><span class="chip v-na">Sin revisar</span> Falta ver el video.</td></tr>
+          <tr><td>@emilianoschenfelt</td><td>168.000</td><td>Asesoría de inversión uno a uno por un WhatsApp de Argentina.</td><td>«Elon Musk lo confirmó»: 3 acciones que podrían volar</td><td><span class="chip v-bad">Cuidado</span> Falta ver el video. En Colombia, una asesoría de inversión debe darla una entidad vigilada por la Superintendencia Financiera.</td></tr>
+          <tr><td>@giraldofinanzas</td><td>31.200</td><td>Carlos Giraldo, cofundador de terminalapp.ai, una herramienta de trading.</td><td>«Claude acaba de matar el day trading»</td><td><span class="chip v-bad">Interés propio</span> Falta ver el video. Promociona trading con inteligencia artificial y vende una herramienta para eso.</td></tr>
+          <tr><td>@mistertoribios</td><td>18.500</td><td>Noticias de mercados; promociona su empresa, chatanalytica.com.</td><td>5 acciones nucleares que pueden multiplicarse</td><td><span class="chip v-bad">Riesgo muy alto</span> Desde su máximo: Oklo −82,43 %, NuScale −87,48 % y Centrus −72,27 %.</td></tr>
+          <tr><td>@pulpofinanciero</td><td>8.953</td><td>Cuenta nueva, con 22 publicaciones; dice que es contenido educativo, no asesoría.</td><td>6 ETF que debes conocer: VT +71 %, VOO +91 %, VEA +62 %</td><td><span class="chip v-mid">Por confirmar</span> Por precio, en 5 años: VT +47,54 %, VOO +67,55 % y VEA +35,17 %. En 3 años: +74,63 %, +84,12 % y +66,79 %. Las del video se parecen más a 3 años que a 5: falta ver qué periodo usa.</td></tr>
+          <tr><td colspan="5"><strong>Negocios distintos a invertir</strong></td></tr>
+          <tr><td>@juano.yt</td><td>196.000</td><td>Juano Baquero; vende una academia para montar canales de YouTube con inteligencia artificial.</td><td>Producir contenido para YouTube con inteligencia artificial</td><td><span class="chip v-na">No es inversión</span> Es un negocio de contenido: lo que se compra es su academia.</td></tr>
+          <tr><td>@ecomtipsbyfer</td><td>11.700</td><td>Consejos de dropshipping (vender sin tener inventario).</td><td>Un joven de 21 años que gana más de US$10.000 al mes</td><td><span class="chip v-na">No es inversión</span> Es reventa de productos, con riesgos de calidad, envíos y reglas de la plataforma.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="checks">
+      <div><h3>Los medios, para estar al día</h3><p>Portafolio, Héctor Chamizo y Mate con Mote cuentan noticias y no venden cursos. Sirven para enterarse primero de lo que mueve los precios.</p></div>
+      <div><h3>Los que venden, con lupa</h3><p>Ocho cuentas viven de cursos, asesorías, herramientas o un broker. Sus videos están hechos para llevar a esa venta: hay que revisar cada cifra antes de creerla.</p></div>
+      <div><h3>La pregunta para cada reel</h3><p>¿Qué vende quien lo publica? ¿La cifra tiene fecha y periodo? ¿Se puede comprobar con el precio real? Si falta una de las tres, se toma como opinión.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2>Noticias del mundo hoy</h2>
+    </div>
+    <ul class="news">
+      <li><span class="when">29/10/2026</span><p><strong>EE. UU.: la economía creció 3,4 % anual en el tercer trimestre</strong>, más que el 3,1 % esperado y que el 2,2 % del trimestre anterior. La inflación PCE de septiembre subió a 3,6 % anual (3,4 % en agosto) y la subyacente a 3,1 %. Economía fuerte con inflación alta: más presión para que la Fed suba en diciembre.</p></li>
+      <li><span class="when">29/10/2026</span><p><strong>Europa: el Banco Central Europeo dejó su tasa en 2,5 %</strong>, después de subirla dos veces este año. La inflación de la zona euro llegó a 3,8 % en septiembre, la más alta en tres años. Christine Lagarde anunció que deja la presidencia el 07/02/2027. El euro bajó a 1,1151 dólares, casi su mínimo del año, y los bonos de Francia pagan lo más alto desde 2002.</p></li>
+      <li><span class="when">29/10/2026</span><p><strong>Alphabet (Google) cae 12,31 %</strong>, a US$284,91. La búsqueda creció 12 %, menos de lo esperado, y la inversión del trimestre llegó a un récord de US$51.400 millones: le salieron US$9.100 millones más de los que le entraron. Google Cloud creció 103 %.</p></li>
+      <li><span class="when">28/10/2026</span><p><strong>Microsoft</strong> presentó resultados mejores de lo esperado por Azure y subió más de 4 % después del cierre. Hoy está en US$525,88 (−0,97 %).</p></li>
+      <li><span class="when">28/10/2026</span><p><strong>La Reserva Federal</strong> dejó la tasa entre 3,75 % y 4 % y no descartó una subida en diciembre. Su presidente, Kevin Warsh, dijo que están listos para actuar.</p></li>
+      <li><span class="when">29/10/2026</span><p><strong>Oro: US$4.023,43 la onza</strong>, −1,15 % hoy. Está a 2,77 % de su mínimo del año y 28,09 % por debajo de su máximo (US$5.595,46). Lo presionan los rendimientos altos de los bonos y el dólar firme.</p></li>
+      <li><span class="when">28 y 29/10/2026</span><p><strong>Petróleo:</strong> subió más de 1 % el miércoles por un ataque reportado a una refinería en Arabia Saudita y bajó hoy en Asia por el acercamiento del vicepresidente de EE. UU., JD Vance, con Irán. En octubre el Brent ha estado alrededor de US$100 a US$105 el barril (US$105,22 el 16/10/2026); el precio de hoy no sale en las fuentes gratuitas. Con el crudo así, Ecopetrol está casi en su máximo del año.</p></li>
+      <li><span class="when">29/10/2026</span><p><strong>Asia:</strong> según investingLive, la bolsa de Corea del Sur (Kospi) cayó 2,8 % porque Samsung aplazó su plan de pago a los accionistas; Samsung pesa cerca del 25 % del fondo DRAM. Shanghái bajó 0,8 % y Japón y Hong Kong quedaron planos.</p></li>
+      <li><span class="when">29/10/2026</span><p><strong>S&amp;P 500 y bitcoin:</strong> el fondo del S&amp;P 500 (SPY) baja 0,46 % hoy y está a 1,65 % de su máximo. El bitcoin está en US$80.330,99, un 29,31 % por debajo de su máximo del año.</p></li>
+      <li><span class="when">30/10/2026</span><p><strong>Banco de la República:</strong> 13 de 19 entidades consultadas por Anif esperan una subida de 12,25 % a 12,50 %.</p></li>
+      <li><span class="when">Tercer trimestre de 2026</span><p><strong>Tesla</strong> arrancó la producción inicial del robot Optimus en Fremont, con la mayor parte de una línea para un millón de unidades ya instalada. Espera vender a otras empresas hacia finales de 2027.</p></li>
+    </ul>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2>Cerca del mínimo del año</h2>
+      <p class="lead">Acciones, fondos y el oro, de los videos y de las empresas más conocidas, que están a menos del 16 % de su mínimo de 52 semanas, ordenados de más cerca a más lejos. El punto muestra dónde está el precio de hoy entre el mínimo y el máximo. «Subida desde el mínimo» es cuánto ha subido el precio desde lo más bajo del último año: entre más pequeño el número, más cerca está del mínimo. «Caída desde el máximo» es cuánto ha bajado desde lo más alto. Ninguno de los dos dice hacia dónde va el precio.</p>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Acción o fondo</th><th class="num">Precio US$</th><th>Rango del año</th><th class="num">Subida desde el mínimo</th><th class="num">Caída desde el máximo</th><th>Por qué cayó</th><th>Utilidades</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="tick">ORO</span><span class="name">Onza de oro</span></td><td class="num">4.023,43</td><td class="range"><div class="bar"><i style="left:6.4%"></i></div><div class="ends"><span>3.915,17</span><span>5.595,46</span></div></td><td class="num">2,77 %</td><td class="num down">−28,09 %</td><td>Los bonos de EE. UU. pagan intereses altos y el oro no paga nada, así que muchos prefieren los bonos. Con el dólar fuerte, el oro sale más caro para quien compra en otra moneda</td><td class="tag">Materia prima</td></tr>
+          <tr><td><span class="tick">KSTR</span><span class="name">China tecnología (STAR 50)</span></td><td class="num">17,73</td><td class="range"><div class="bar"><i style="left:3.3%"></i></div><div class="ends"><span>17,23</span><span>32,54</span></div></td><td class="num">2,90 %</td><td class="num down">−45,51 %</td><td>Las tecnológicas chinas subieron demasiado con la moda de la IA y se desinflaron: −45 % desde julio</td><td class="tag">Fondo de un país</td></tr>
+          <tr><td><span class="tick">BOTZ</span><span class="name">Fondo de robots e IA</span></td><td class="num">33,41</td><td class="range"><div class="bar"><i style="left:15.6%"></i></div><div class="ends"><span>31,88</span><span>41,71</span></div></td><td class="num">4,82 %</td><td class="num down">−19,90 %</td><td>No se encontró una noticia de la empresa; cayó junto con su sector</td><td class="tag">Fondo; 10 años en bolsa</td></tr>
+          <tr><td><span class="tick">OKLO</span><span class="name">Oklo, reactores pequeños</span></td><td class="num">26,72</td><td class="range"><div class="bar"><i style="left:1%"></i></div><div class="ends"><span>25,39</span><span>152,06</span></div></td><td class="num">5,24 %</td><td class="num down">−82,43 %</td><td>Tasas más altas desde el 14/10/2026 y venta de acciones nuevas</td><td class="tag">No, todavía no vende</td></tr>
+          <tr><td><span class="tick">GOOGL</span><span class="name">Alphabet (Google)</span></td><td class="num">284,91</td><td class="range"><div class="bar"><i style="left:12.2%"></i></div><div class="ends"><span>267,67</span><span>408,61</span></div></td><td class="num">6,44 %</td><td class="num down">−30,27 %</td><td>Resultados del 28/10/2026: menos crecimiento en búsqueda y gasto récord</td><td class="tag">Sí</td></tr>
+          <tr><td><span class="tick">SYM</span><span class="name">Symbotic, robots de bodega</span></td><td class="num">39,21</td><td class="range"><div class="bar"><i style="left:5.3%"></i></div><div class="ends"><span>36,47</span><span>87,88</span></div></td><td class="num">7,51 %</td><td class="num down">−55,38 %</td><td>No se encontró una noticia de la empresa; cayó junto con su sector</td><td class="tag">Sin verificar</td></tr>
+          <tr><td><span class="tick">NU</span><span class="name">Nubank</span></td><td class="num">12,09</td><td class="range"><div class="bar"><i style="left:11.4%"></i></div><div class="ends"><span>11,20</span><span>18,98</span></div></td><td class="num">7,95 %</td><td class="num down">−36,30 %</td><td>Reelección de Lula en Brasil</td><td class="tag">Sí</td></tr>
+          <tr><td><span class="tick">VST</span><span class="name">Vistra, electricidad</span></td><td class="num">143,43</td><td class="range"><div class="bar"><i style="left:15.8%"></i></div><div class="ends"><span>132,66</span><span>200,73</span></div></td><td class="num">8,12 %</td><td class="num down">−28,55 %</td><td>No se encontró una noticia de la empresa; cayó junto con su sector</td><td class="tag">Sí</td></tr>
+          <tr><td><span class="tick">EWZ</span><span class="name">Fondo de Brasil</span></td><td class="num">33,35</td><td class="range"><div class="bar"><i style="left:20%"></i></div><div class="ends"><span>30,72</span><span>43,90</span></div></td><td class="num">8,56 %</td><td class="num down">−24,03 %</td><td>Reelección de Lula; no ha rebotado</td><td class="tag">Fondo de un país</td></tr>
+          <tr><td><span class="tick">SMR</span><span class="name">NuScale, reactores pequeños</span></td><td class="num">5,70</td><td class="range"><div class="bar"><i style="left:1.2%"></i></div><div class="ends"><span>5,20</span><span>45,54</span></div></td><td class="num">9,62 %</td><td class="num down">−87,48 %</td><td>Lo mismo que Oklo</td><td class="tag">No</td></tr>
+          <tr><td><span class="tick">MELI</span><span class="name">MercadoLibre</span></td><td class="num">1.651,60</td><td class="range"><div class="bar"><i style="left:16.8%"></i></div><div class="ends"><span>1.495,00</span><span>2.428,00</span></div></td><td class="num">10,47 %</td><td class="num down">−31,98 %</td><td>Brasil: −7,8 % el 26/10/2026; el 52,6 % de sus ingresos viene de allá. Resultados en noviembre</td><td class="tag">Sí</td></tr>
+          <tr><td><span class="tick">HUMN</span><span class="name">Fondo de robots humanoides</span></td><td class="num">28,18</td><td class="range"><div class="bar"><i style="left:19.7%"></i></div><div class="ends"><span>25,47</span><span>39,17</span></div></td><td class="num">10,62 %</td><td class="num down">−28,07 %</td><td>No se encontró una noticia de la empresa; cayó junto con su sector</td><td class="tag">Fondo</td></tr>
+          <tr><td><span class="tick">EUV</span><span class="name">Fondo de fabricación de chips</span></td><td class="num">22,33</td><td class="range"><div class="bar"><i style="left:20.3%"></i></div><div class="ends"><span>19,86</span><span>32,00</span></div></td><td class="num">12,44 %</td><td class="num down">−30,22 %</td><td>Fondo nuevo, de mayo de 2026</td><td class="tag">Fondo sin historia</td></tr>
+          <tr><td><span class="tick">MP</span><span class="name">MP Materials, tierras raras</span></td><td class="num">41,92</td><td class="range"><div class="bar"><i style="left:12.1%"></i></div><div class="ends"><span>37,11</span><span>76,80</span></div></td><td class="num">12,96 %</td><td class="num down">−45,42 %</td><td>No se encontró una noticia de la empresa; cayó junto con su sector</td><td class="tag">Sin verificar</td></tr>
+          <tr><td><span class="tick">LEU</span><span class="name">Centrus, uranio</span></td><td class="num">111,46</td><td class="range"><div class="bar"><i style="left:4.8%"></i></div><div class="ends"><span>96,80</span><span>402,00</span></div></td><td class="num">15,14 %</td><td class="num down">−72,27 %</td><td>Cayó con todo el sector nuclear</td><td class="tag">Sin verificar</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h3 class="compare-title">Para comparar: más lejos del mínimo</h3>
+    <p class="lead">Estas cuatro están lejos de su mínimo: han subido entre 19,67 % y 36,01 % desde él y están en la mitad de su rango. Ejemplo con Tesla: su precio más bajo del año fue US$297,38 y hoy está en US$404,46, o sea US$107,08 más. Esos US$107,08 son el 36,01 % de US$297,38 (lo que ha subido). Para volver al mínimo tendría que bajar los mismos US$107,08, que son el 26,47 % de los US$404,46 de hoy.</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Acción</th><th class="num">Precio US$</th><th>Rango del año</th><th class="num">Subida desde el mínimo</th><th class="num">Caída desde el máximo</th><th class="num">Caída para volver al mínimo</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="tick">META</span><span class="name">Meta</span></td><td class="num">622,61</td><td class="range"><div class="bar"><i style="left:39.4%"></i></div><div class="ends"><span>520,26</span><span>779,82</span></div></td><td class="num">19,67 %</td><td class="num down">−20,16 %</td><td class="num">−16,44 %</td></tr>
+          <tr><td><span class="tick">AMZN</span><span class="name">Amazon (hoy −3,22 %)</span></td><td class="num">246,41</td><td class="range"><div class="bar"><i style="left:55.3%"></i></div><div class="ends"><span>196,00</span><span>287,20</span></div></td><td class="num">25,72 %</td><td class="num down">−14,20 %</td><td class="num">−20,46 %</td></tr>
+          <tr><td><span class="tick">NVDA</span><span class="name">Nvidia</span></td><td class="num">213,42</td><td class="range"><div class="bar"><i style="left:62.1%"></i></div><div class="ends"><span>164,27</span><span>243,37</span></div></td><td class="num">29,92 %</td><td class="num down">−12,31 %</td><td class="num">−23,03 %</td></tr>
+          <tr><td><span class="tick">TSLA</span><span class="name">Tesla</span></td><td class="num">404,46</td><td class="range"><div class="bar"><i style="left:53.2%"></i></div><div class="ends"><span>297,38</span><span>498,83</span></div></td><td class="num">36,01 %</td><td class="num down">−18,92 %</td><td class="num">−26,47 %</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="lead">Apple (US$349,98) y Ecopetrol (US$17,63) están casi en su máximo del año.</p>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2>Qué puede mover estos precios</h2>
+      <p class="lead">Cuatro fuerzas explican la mayoría de lo que pasa hoy. Cada una empuja a unas empresas hacia arriba y a otras hacia abajo.</p>
+    </div>
+    <div class="forces">
+      <div><h3>Tasas altas por más tiempo</h3><p>EE. UU. creció 3,4 % con una inflación de 3,6 %, y la Fed no descarta subir en diciembre. Las tasas altas golpean más a las empresas que todavía no ganan plata y necesitan financiarse (Oklo, NuScale), a las que se pagan caro por su crecimiento futuro (Keyence, tecnología) y al oro, que no paga intereses. Un dato de inflación más bajo sería el mayor impulso para todas ellas.</p></div>
+      <div><h3>El gasto en inteligencia artificial</h3><p>Alphabet gastó US$51.400 millones en un trimestre y anunció que en 2027 gastará bastante más. La bolsa castigó a quien gasta (−12,31 %), pero esa plata es la venta de sus proveedores: chips (Nvidia, SMH), memorias (DRAM), máquinas para chips (EUV) y electricidad (Vistra). El riesgo para los proveedores es que los grandes recorten si la bolsa los sigue castigando.</p></div>
+      <div><h3>Brasil después de la elección</h3><p>El mercado teme más gasto público con Lula: el real se devaluó 8,65 % y el Ibovespa cayó 13,88 % en un día. Nubank, MercadoLibre y el fondo EWZ dependen de lo que anuncie el gobierno sobre el gasto y de que se aclare el pedido de Flávio Bolsonaro de anular la elección. Una señal de disciplina fiscal los ayudaría; más incertidumbre los mantendría abajo.</p></div>
+      <div><h3>Petróleo e Irán</h3><p>El ataque reportado a una refinería saudí subió el crudo y el acercamiento con Irán lo bajó. El petróleo caro favorece a Ecopetrol y sostiene al oro como refugio, pero alimenta la inflación y con ella las tasas altas. Un acuerdo con Irán bajaría el crudo y le quitaría presión a la inflación.</p></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Acción o fondo</th><th>Lo que la puede impulsar</th><th>Lo que la puede frenar</th><th>Fecha a mirar</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="tick">GOOGL</span><span class="name">Alphabet (Google)</span></td><td class="plus">Gana plata y Google Cloud creció 103 %. Si muestra que el gasto en IA se convierte en ventas, la bolsa la puede volver a valorar.</td><td class="minus">Gastará más en 2027 y la búsqueda crece menos (12 %). En el trimestre le salieron US$9.100 millones más de los que le entraron.</td><td>Próximos resultados, a comienzos de 2027</td></tr>
+          <tr><td><span class="tick">NU</span><span class="name">Nubank</span></td><td class="plus">Gana plata. UBS subió su precio objetivo a US$20,50 el 20/10/2026, antes de la elección.</td><td class="minus">Más gasto público y tasas más altas en Brasil pueden aumentar la morosidad de sus clientes.</td><td>Anuncios fiscales de Brasil y resultados del tercer trimestre</td></tr>
+          <tr><td><span class="tick">MELI</span><span class="name">MercadoLibre</span></td><td class="plus">Gana plata; con el 52,6 % de sus ingresos en Brasil, es de las que más suben si Brasil se calma.</td><td class="minus">Con el real débil, lo que vende en Brasil vale menos en dólares. Ya cayó cerca de 13 % tras sus resultados de comienzos de 2026 por presión en los márgenes.</td><td>Resultados en noviembre de 2026</td></tr>
+          <tr><td><span class="tick">EWZ</span><span class="name">Fondo de Brasil</span></td><td class="plus">Una señal clara de disciplina fiscal del gobierno.</td><td class="minus">El pedido de anular la elección y más devaluación del real.</td><td>Anuncios del gobierno de Brasil</td></tr>
+          <tr><td><span class="tick">VST</span><span class="name">Vistra</span></td><td class="plus">Vende electricidad y gana plata; los centros de datos necesitan cada vez más energía.</td><td class="minus">Tasas altas y las caídas de todo el sector nuclear y de energía.</td><td>Fed, diciembre de 2026</td></tr>
+          <tr><td><span class="tick">OKLO · SMR</span><span class="name">Oklo y NuScale</span></td><td class="plus">Una bajada de tasas o un contrato grande con un centro de datos.</td><td class="minus">No venden todavía, se financian emitiendo acciones nuevas (Oklo, hasta US$1.000 millones) y tienen entre 16 % y 17 % de apuestas en contra.</td><td>Inflación de EE. UU. y Fed de diciembre de 2026</td></tr>
+          <tr><td><span class="tick">LEU</span><span class="name">Centrus</span></td><td class="plus">Fabrica el uranio especial que usan los reactores nuevos y tiene acuerdo de suministro con X-Energy.</td><td class="minus">Si los reactores nuevos se demoran, sus pedidos también.</td><td>Avances de los reactores pequeños</td></tr>
+          <tr><td><span class="tick">DRAM · EUV · SMH</span><span class="name">Fondos de chips</span></td><td class="plus">Más gasto en IA de los grandes; Alphabet ya anunció que gastará más en 2027.</td><td class="minus">DRAM tiene el 72 % en tres empresas y el negocio de memorias sube y baja por ciclos. Según reportes de agosto, Samsung decide su próximo pago a accionistas en enero de 2027.</td><td>Resultados de Nvidia y de Samsung</td></tr>
+          <tr><td><span class="tick">KSTR</span><span class="name">China tecnología</span></td><td class="plus">Estímulos del gobierno chino.</td><td class="minus">Aun después de caer, su PER (alrededor de 100) es más de tres veces el del Nasdaq (alrededor de 30).</td><td>Sin fecha concreta</td></tr>
+          <tr><td><span class="tick">BOTZ · HUMN · SYM · MP</span><span class="name">Robots y tierras raras</span></td><td class="plus">La producción en serie de robots; Tesla ya tiene casi instalada una línea para un millón.</td><td class="minus">Según reportes, Tesla bajó su meta del año de 5.000 a 2.000 robots y vendería a otras empresas hasta finales de 2027. Los fondos de robots cobran mucho más que un fondo indexado.</td><td>Avances de Optimus en los resultados de Tesla</td></tr>
+          <tr><td><span class="tick">ORO</span><span class="name">Onza de oro</span></td><td class="plus">Una bajada de tasas, un dólar más débil o más conflicto en el golfo Pérsico.</td><td class="minus">Una subida de la Fed en diciembre y un acuerdo con Irán.</td><td>Fed, diciembre de 2026</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="checks">
+      <div><h3>Ganan plata y las golpeó una noticia</h3><p>Google, Nubank, MercadoLibre y Vistra. Para subir necesitan que esa noticia pierda peso: que el gasto de Google se convierta en ventas o que Brasil se calme.</p></div>
+      <div><h3>No ganan plata y dependen de las tasas</h3><p>Oklo y NuScale. Para subir necesitan tasas más bajas o contratos grandes; mientras tanto siguen emitiendo acciones.</p></div>
+      <div><h3>Temas o países completos</h3><p>China, Brasil, chips, robots y oro. Se mueven con la noticia general (estímulos en China, gasto en IA, la Fed), no con una sola empresa.</p></div>
+    </div>
+    <p class="lead">Para alguien en Colombia hay una capa más: todo esto está en dólares. Si el Banco de la República sube la tasa el 30/10/2026, el peso suele fortalecerse, y lo invertido en dólares vale menos en pesos.</p>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2>Cómo leer la lista</h2>
+      <p class="lead">Estar cerca del mínimo no significa que vaya a rebotar: Oklo y NuScale llevan todo el año marcando mínimos nuevos. Tres revisiones para cada nombre:</p>
+    </div>
+    <div class="checks">
+      <div><h3>Si la empresa genera utilidades</h3><p>Separa a Google, Nubank, MercadoLibre y Vistra de Oklo y NuScale, que todavía no venden y se financian emitiendo acciones.</p></div>
+      <div><h3>Si la caída es pasajera o del negocio</h3><p>Una elección o un dato de inflación pasan; que la búsqueda de Google crezca menos puede ser un cambio de fondo.</p></div>
+      <div><h3>La próxima noticia</h3><p>Una fecha concreta, como los resultados de MercadoLibre en noviembre, dice cuándo se puede volver a mover.</p></div>
+    </div>
+  </section>
+
+  <footer>
+    <p class="notice">Información para decidir, no recomendación de compra. No proviene de un asesor financiero con licencia.</p>
+    <p>Precios de Twelve Data del 29/10/2026 durante la sesión; los porcentajes se calcularon con esos precios. Las rentabilidades anuales son por precio, sin dividendos. La relación precio/utilidad de cada empresa no se incluyó porque las fuentes gratuitas no la dan.</p>
+    <ul class="sources">
+      <li><a href="https://www.benzinga.com/markets/earnings/26/10/62695592/alphabet-stock-worst-day-since-march-2020-search-cloud" target="_blank" rel="noopener">Benzinga: el peor día de Alphabet desde 2020</a></li>
+      <li><a href="https://www.tikr.com/blog/alphabet-sinks-10-on-9-billion-cash-burn-and-significant-miss-in-search" target="_blank" rel="noopener">TIKR: Alphabet y la plata que gastó</a></li>
+      <li><a href="https://www.portafolio.co/internacional/supermiercoles-en-wall-street-la-fed-y-los-resultados-de-microsoft-y-alphabet-ponen-a-prueba-al-mercado-505299" target="_blank" rel="noopener">Portafolio: la Fed mantiene sus tasas</a></li>
+      <li><a href="https://perspectivas.cohen.com.ar/articulos/updatesdiarios-global-la-fed-se-queda-quieta-y-microsoft-brilla-tras-el-cierre" target="_blank" rel="noopener">Cohen: la Fed y Microsoft</a></li>
+      <li><a href="https://www.portafolio.co/economia/finanzas/tasas-de-interes-seguirian-al-alza-13-de-19-entidades-consultadas-por-anif-esperan-subida-al-12-50-en-octubre-505044" target="_blank" rel="noopener">Portafolio: encuesta de Anif sobre tasas</a></li>
+      <li><a href="https://revistasumma.com/?p=249819" target="_blank" rel="noopener">Revista Summa: Ibovespa −13,88 %</a></li>
+      <li><a href="https://www.suno.com.br/noticias/ibovespa-55-anos-maiores-altas-baixas-historia/amp/" target="_blank" rel="noopener">Suno: mayores caídas del Ibovespa</a></li>
+      <li><a href="https://www.trefis.com/stock/meli/articles/620849/what-sent-mercadolibre-stock-lower/2026-10-27" target="_blank" rel="noopener">Trefis: por qué cayó MercadoLibre</a></li>
+      <li><a href="https://www.tikr.com/blog/mercadolibre-stock-rose-9-in-october-on-brazils-election-time-to-sell-or-load-up" target="_blank" rel="noopener">TIKR: MercadoLibre y Brasil</a></li>
+      <li><a href="https://www.tikr.com/blog/oklo-and-nuscale-sink-15-in-a-week-is-the-nuclear-selling-overdone" target="_blank" rel="noopener">TIKR: Oklo y NuScale caen 15 % en una semana</a></li>
+      <li><a href="https://www.benzinga.com/markets/equities/26/09/61885903" target="_blank" rel="noopener">Benzinga: apuestas en contra de Oklo y NuScale</a></li>
+      <li><a href="https://www.barchart.com/story/news/3866381/peter-thiel-linked-fund-rebuilds-400-million-portfolio-around-power-nuclear-and-amazon" target="_blank" rel="noopener">Barchart: el portafolio del fondo de Thiel</a></li>
+      <li><a href="https://www.startuphub.ai/news/spacex-q2-2026-earnings-spcx-august-4-2026" target="_blank" rel="noopener">Startuphub: resultados de SpaceX</a></li>
+      <li><a href="https://www.rexshares.com/spacexs-75-billion-ipo-in-five-charts/" target="_blank" rel="noopener">Rex Shares: la salida a bolsa de SpaceX</a></li>
+      <li><a href="https://www.investmentnews.com/etfs/billion-dollar-bonanza-roundhills-memory-etf-hits-1b-in-assets-within-10-trading-days/266280" target="_blank" rel="noopener">InvestmentNews: el fondo DRAM</a></li>
+      <li><a href="https://stockanalysis.com/etf/euv/" target="_blank" rel="noopener">StockAnalysis: el fondo EUV</a></li>
+      <li><a href="https://www.financemagnates.com/forex/naga-markets-settles-with-cysec-for-150k-over-violations/" target="_blank" rel="noopener">Finance Magnates: multa a NAGA</a></li>
+      <li><a href="https://driveteslacanada.ca/?p=126159" target="_blank" rel="noopener">Drive Tesla: producción de Optimus en Fremont</a></li>
+      <li><a href="https://www.eweek.com/robotics/tesla-optimus-robot-launch-timeline/" target="_blank" rel="noopener">eWeek: calendario de Optimus</a></li>
+      <li><a href="https://www.keyence.co.jp/pdf/FinancialResults_202607_en.pdf" target="_blank" rel="noopener">Keyence: resultados financieros</a></li>
+      <li><a href="https://www.benzinga.com/markets/economic-data/26/10/62693319/us-economy-gdp-third-quarter-pce-inflation-september" target="_blank" rel="noopener">Benzinga: PIB e inflación de EE. UU.</a></li>
+      <li><a href="https://invezz.com/news/2026/10/29/pce-inflation-accelerates-to-3-6-as-gdp-growth-beats-estimates-jobless-claims-fall/" target="_blank" rel="noopener">Invezz: inflación PCE de 3,6 %</a></li>
+      <li><a href="https://euronews.com/2026/10/29/ecb-president-christine-lagarde-to-step-down-in-february-months-before-her-term-ends" target="_blank" rel="noopener">Euronews: Lagarde deja el BCE</a></li>
+      <li><a href="https://www.globalbankingandfinance.com/ecb-keeps-rates-unchanged-euro-slips/" target="_blank" rel="noopener">Global Banking &amp; Finance: el BCE y el euro</a></li>
+      <li><a href="https://tradingview.com/news/moneycontrol:3c2d11bf7094b:0-global-stocks-hold-gains-after-fed-decision-oil-prices-rise" target="_blank" rel="noopener">TradingView: bolsas del mundo tras la Fed</a></li>
+      <li><a href="https://investinglive.com/news/investinglive-asia-pacific-market-news-oil-eases-on-vance-s-iran-outreach" target="_blank" rel="noopener">investingLive: Asia, petróleo e Irán</a></li>
+      <li><a href="https://kitco.com/news/article/2026-10-28/gold-recovery-stalls-saudi-refinery-attack-claims-lift-crude-silver" target="_blank" rel="noopener">Kitco: oro y refinería saudí</a></li>
+      <li><a href="https://www.soldionline.it/notizie/forex-commodities/petrolio-in-calo-wti-a-9726-dollari-e-brent-a-10522" target="_blank" rel="noopener">Soldionline: Brent el 16/10/2026</a></li>
+      <li><a href="https://www.coindesk.com/business/2026/10/28/wall-street-backbone-dtcc-brings-usd30-trillion-securities-closer-to-blockchain-with-major-banks" target="_blank" rel="noopener">CoinDesk: la DTCC lanza la tokenización</a></li>
+      <li><a href="https://crypto.news/sec-plans-regulatory-path-for-24-7-tokenized-stocks/" target="_blank" rel="noopener">crypto.news: la SEC y las acciones tokenizadas 24/7</a></li>
+      <li><a href="https://www.tdsecurities.com/ca/en/nyse-tokenized-equities-atp-launch" target="_blank" rel="noopener">TD Securities: la plataforma tokenizada de NYSE</a></li>
+      <li><a href="https://finance.yahoo.com/markets/crypto/articles/wall-streets-clearinghouse-dtcc-enlists-173451137.html" target="_blank" rel="noopener">Yahoo Finance: la DTCC y Chainlink</a></li>
+      <li><a href="https://www.theblock.co/news/defi/2026-08-10-standard-chartered-chainlink-tokenization-411252" target="_blank" rel="noopener">The Block: Standard Chartered y LINK a US$200</a></li>
+    </ul>
+  </footer>
+</div>
+</body>
+</html>
